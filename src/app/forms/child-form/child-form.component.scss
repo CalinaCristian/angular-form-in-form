@@ -1,0 +1,23 @@
+.form-actions {
+    margin-top: 50px;
+    display: flex;
+    justify-content: center;
+
+    button {
+        margin: 0 10px;
+    }
+}
+
+mat-form-field {
+    padding: 5px 0px 25px 2px;
+    width: 100%;
+}
+
+.entity-container {
+    display: flex;
+    align-items: center;
+
+    button {
+        margin-left: 10px;
+    }
+}

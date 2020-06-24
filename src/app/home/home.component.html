@@ -1,0 +1,29 @@
+<button mat-raised-button routerLink="add-process" routerLinkActive="active">
+    <span>Add Process </span>
+    <span *ngIf="formState.process?.status === 'cancelled'" [style.color]="'red'">(cancelled)</span>
+    <span *ngIf="formState.process?.status === 'saved'" [style.color]="'green'">(saved)</span>
+</button>
+
+<div *ngIf="formState.process?.values" class="process-details">
+    <h3> Successfully created process: </h3>
+    <div>
+        <span>Process name: </span>
+        <span [style.color]="'green'">{{formState.process.values.processName}}</span>
+    </div>
+    <div>
+        <span>Process Version: </span>
+        <span [style.color]="'green'">{{formState.process.values.processVersion}}</span>
+    </div>
+    <div>
+        <span>Package name: </span>
+        <span [style.color]="'green'">{{formState.process.values.packageName}}</span>
+    </div>
+    <div>
+        <span>Environment name: </span>
+        <span [style.color]="'green'">{{formState.process.values.environmentName}}</span>
+    </div>
+    <div>
+        <span>Entity name: </span>
+        <span [style.color]="'green'">{{formState.process.values.entityName}}</span>
+    </div>
+</div>

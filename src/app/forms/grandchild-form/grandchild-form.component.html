@@ -1,0 +1,14 @@
+<form [formGroup]="formGroup" (ngSubmit)="addEntity(formGroup.value)">
+  <mat-form-field>
+      <mat-label>Entity Name</mat-label>
+      <input matInput formControlName="entityName" type="text" />
+      <mat-error *ngIf="formGroup.get('entityName').hasError('required')">
+          Entity Name is required
+      </mat-error>
+  </mat-form-field>
+
+  <div class="form-actions">
+      <button mat-raised-button color="primary" [disabled]="!formGroup.valid">Save</button>
+      <button mat-raised-button color="warn" type="button" (click)="cancelAddEntity()">Cancel</button>
+  </div>
+</form>

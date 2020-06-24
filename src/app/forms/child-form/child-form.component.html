@@ -1,0 +1,31 @@
+<div class="form-container" *ngIf="route.children.length === 0">
+    <form [formGroup]="formGroup" (ngSubmit)="addPackage(formGroup.value)">
+        <div class="entity-container">
+            <h4 *ngIf="!formState.entity?.values">No entity found.</h4>
+            <h5 *ngIf="formState.entity?.values">
+                <span>Created and selected entity: </span>
+                <span [style.color]="'green'">{{formState.entity.values.entityName}}</span>
+            </h5>
+            <button mat-raised-button routerLink="add-entity" type="button">
+                <span>Add entity </span>
+                <span *ngIf="formState.entity?.status === 'cancelled'" [style.color]="'red'">(cancelled)</span>
+                <span *ngIf="formState.entity?.status === 'saved'" [style.color]="'green'">(saved)</span>
+            </button>
+        </div>
+
+        <mat-form-field>
+            <mat-label>Package Name</mat-label>
+            <input matInput formControlName="packageName" type="text" />
+            <mat-error *ngIf="formGroup.get('packageName').hasError('required')">
+                Package Name is required
+            </mat-error>
+        </mat-form-field>
+
+        <div class="form-actions">
+            <button mat-raised-button color="primary" [disabled]="!formGroup.valid || !formState.entity?.values">Save</button>
+            <button mat-raised-button color="warn" type="button" (click)="cancelAddPackage()">Cancel</button>
+        </div>
+    </form>
+</div>
+
+<router-outlet></router-outlet>

@@ -1,0 +1,14 @@
+<form [formGroup]="formGroup" (ngSubmit)="addEnvironment(formGroup.value)">
+  <mat-form-field>
+      <mat-label>Environment Name</mat-label>
+      <input matInput formControlName="environmentName" type="text" />
+      <mat-error *ngIf="formGroup.get('environmentName').hasError('required')">
+          Environment Name is required
+      </mat-error>
+  </mat-form-field>
+
+  <div class="form-actions">
+      <button mat-raised-button color="primary" [disabled]="!formGroup.valid">Save</button>
+      <button mat-raised-button color="warn" type="button" (click)="cancelAddEnvironment()">Cancel</button>
+  </div>
+</form>

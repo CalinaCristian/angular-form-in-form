@@ -1,0 +1,56 @@
+<div class="form-container" *ngIf="route.children.length === 0">
+    <form [formGroup]="formGroup" (ngSubmit)="addProcess(formGroup.value)">
+        <div class="package-container">
+            <h4 *ngIf="!formState.package?.values">No package found.</h4>
+            <h5 *ngIf="formState.package?.values">
+                <span>Created and selected package: </span>
+                <span [style.color]="'green'">{{formState.package.values.packageName}}</span>
+            </h5>
+            <button mat-raised-button routerLink="add-package" type="button">
+                <span>Add package </span>
+                <span *ngIf="formState.package?.status === 'cancelled'" [style.color]="'red'">(cancelled)</span>
+                <span *ngIf="formState.package?.status === 'saved'" [style.color]="'green'">(saved)</span>
+            </button>
+        </div>
+        
+        <mat-form-field>
+            <mat-label>Process Name</mat-label>
+            <input matInput formControlName="processName" type="text" />
+            <mat-error *ngIf="formGroup.get('processName').hasError('required')">
+                Process Name is required
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>Process Version</mat-label>
+            <input matInput formControlName="processVersion" type="text" />
+            <mat-error *ngIf="formGroup.get('processVersion').hasError('required')">
+                Process Version is required
+            </mat-error>
+        </mat-form-field>
+
+        <div class="environment-container">
+            <h4 *ngIf="!formState.environment?.values">No environment found.</h4>
+            <h5 *ngIf="formState.environment?.values">
+                <span>Created and selected environment: </span>
+                <span [style.color]="'green'">{{formState.environment.values.environmentName}}</span>
+            </h5>
+            <button mat-raised-button routerLink="add-environment" type="button">
+                <span>Add environment </span>
+                <span *ngIf="formState.environment?.status === 'cancelled'" [style.color]="'red'">(cancelled)</span>
+                <span *ngIf="formState.environment?.status === 'saved'" [style.color]="'green'">(saved)</span>
+            </button>
+        </div>
+
+        <div class="form-actions">
+            <button [disabled]="!formGroup.valid || !formState.package?.values || !formState.environment?.values"
+                    mat-raised-button
+                    color="primary">
+                Save
+            </button>
+            <button mat-raised-button color="warn" type="button" (click)="cancelAddProcess()">Cancel</button>
+        </div>
+    </form>
+</div>
+
+<router-outlet></router-outlet>
