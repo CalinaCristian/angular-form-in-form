@@ -1,8 +1,8 @@
 import { Component, ComponentFactoryResolver, ComponentRef, OnDestroy, OnInit, ViewContainerRef, ViewEncapsulation, Injector } from '@angular/core';
-import { Subject } from 'rxjs';
-import { startWith, takeUntil } from 'rxjs/operators';
+import { Subject, BehaviorSubject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { UpsertStateService } from 'src/app/upsert-state.service';
-import { UpsertEvent, ComponentFactory, UpsertContext } from 'src/app/upsert.types';
+import { ComponentFactory, UpsertContext, Upsert } from 'src/app/upsert.types';
 
 @Component({
     selector: 'app-upsert',
@@ -30,7 +30,7 @@ export class UpsertComponent implements OnInit, OnDestroy {
                 if (event.type === 'push') {
                     this.loadComponent(event.factory, event.data);
                 } else {
-                    this.destroyComponent();
+                    this.destroyComponent(event.status === 'success' ? event.data : undefined);
                 }
             });
     }
@@ -39,20 +39,27 @@ export class UpsertComponent implements OnInit, OnDestroy {
         this.destroyed$.next();
     }
 
-    async destroyComponent() {
+    async destroyComponent(data?: { [key: string]: any }) {
         const popped = this.components.pop();
         if (this.components.length > 0) {
-            this.components[this.components?.length - 1].location.nativeElement.classList.remove('hide');
+            const activeComponent = this.components[this.components?.length - 1];
+
+            (activeComponent.instance as Upsert<any>).upsertContext.childData$.next(data);
+            activeComponent.location.nativeElement.classList.remove('hide');
         }
         popped.destroy();
     }
 
-    async loadComponent(factory: ComponentFactory, data?: object) {
+    async loadComponent(factory: ComponentFactory, data?: { [key: string]: any }) {
+        const childData$ = new Subject();
         const injector = Injector.create({
             providers: [
                 {
                     provide: UpsertContext,
-                    useValue: new UpsertContext(data),
+                    useValue: new UpsertContext(
+                        childData$,
+                        data
+                    ),
                 }
             ],
             parent: this.injector,
@@ -65,7 +72,8 @@ export class UpsertComponent implements OnInit, OnDestroy {
             injector
         );
         component.instance.upsertContext = {
-            data
+            parentData: data,
+            childData$
         };
 
         if (this.components.length > 0) {

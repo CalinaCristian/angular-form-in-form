@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ChildSiblingFormComponent } from './child-sibling-form.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { RouterModule } from '@angular/router';
 import { MaterialModule } from 'src/app/material.module';
 import { ReactiveFormsModule } from '@angular/forms';
 
@@ -10,7 +9,6 @@ import { ReactiveFormsModule } from '@angular/forms';
   imports: [
     CommonModule,
     BrowserAnimationsModule,
-    RouterModule,
     MaterialModule,
     ReactiveFormsModule,
   ],

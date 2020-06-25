@@ -1,6 +1,11 @@
 <div class="form-container">
     <form [formGroup]="formGroup" (ngSubmit)="addPackage(formGroup.value)">
         <div class="entity-container">
+            <h5 *ngIf="!childData.entityName"> No entity found. </h5>
+            <h5 *ngIf="childData.entityName">
+                <span>Entity saved and selected: </span>
+                <span [style.color]="'green'">{{childData.entityName}}</span>
+            </h5>
             <button mat-raised-button type="button" (click)="upsertState.push(dependencies.grandchild)">
                 <span>Add entity </span>
             </button>
@@ -15,7 +20,7 @@
         </mat-form-field>
 
         <div class="form-actions">
-            <button mat-raised-button color="primary" [disabled]="!formGroup.valid">Save</button>
+            <button mat-raised-button color="primary" [disabled]="!formGroup.valid || !childData.entityName">Save</button>
             <button mat-raised-button color="warn" type="button" (click)="cancelAddPackage()">Cancel</button>
         </div>
     </form>

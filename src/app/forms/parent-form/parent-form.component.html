@@ -1,6 +1,11 @@
 <div class="form-container">
     <form [formGroup]="formGroup" (ngSubmit)="addProcess(formGroup.value)">
         <div class="package-container">
+            <h5 *ngIf="!childData.packageName"> No package found. </h5>
+            <h5 *ngIf="childData.packageName">
+                <span>Package saved and selected: </span>
+                <span [style.color]="'green'">{{childData.packageName}}</span>
+            </h5>
             <button (click)="upsertState.push(dependencies.child)" mat-raised-button type="button">
                 <span>Add package </span>
             </button>
@@ -23,13 +28,18 @@
         </mat-form-field>
 
         <div class="environment-container">
+            <h5 *ngIf="!childData.environmentName"> No environment found. </h5>
+            <h5 *ngIf="childData.environmentName">
+                <span>Environment saved and selected: </span>
+                <span [style.color]="'green'">{{childData.environmentName}}</span>
+            </h5>
             <button (click)="upsertState.push(dependencies.childsibling)" mat-raised-button type="button">
                 <span>Add environment</span>
             </button>
         </div>
 
         <div class="form-actions">
-            <button [disabled]="!formGroup.valid" mat-raised-button color="primary">
+            <button [disabled]="!formGroup.valid || !childData.environmentName || !childData.packageName" mat-raised-button color="primary">
                 Save
             </button>
             <button mat-raised-button color="warn" type="button" (click)="cancelAddProcess()">Cancel</button>

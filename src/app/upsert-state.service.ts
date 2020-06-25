@@ -12,15 +12,15 @@ export class UpsertStateService {
 
     constructor() { }
 
-    public push(factory: ComponentFactory, data?: object) {
+    public push(factory: ComponentFactory, data?: { [key: string]: any }) {
         this.componentFactories.push(factory);
         this.events$.next({ type: 'push', factory, data });
     }
 
     public pop(status: 'cancel'): void;
-    public pop(status: 'success', data: object): void;
+    public pop(status: 'success', data: { [key: string]: any }): void;
 
-    public pop(status: 'cancel' | 'success', data?: object) {
+    public pop(status: 'cancel' | 'success', data?: { [key: string]: any }) {
         this.componentFactories.pop();
         this.events$.next({ type: 'pop', status, data });
     }
