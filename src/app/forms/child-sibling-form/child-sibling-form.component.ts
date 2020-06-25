@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { UpsertStateService } from 'src/app/upsert-state.service';
 
 @Component({
     selector: 'app-child-sibling-form',
@@ -12,9 +13,8 @@ export class ChildSiblingFormComponent implements OnInit {
     public formGroup: FormGroup;
 
     constructor(
-        private route: ActivatedRoute,
-        private router: Router,
         private formBuilder: FormBuilder,
+        private upsertState: UpsertStateService,
     ) { }
 
     ngOnInit() {
@@ -24,19 +24,10 @@ export class ChildSiblingFormComponent implements OnInit {
     }
 
     public cancelAddEnvironment() {
-        this.router.navigate(['..'], { relativeTo: this.route, state: { data: { form: 'environment', status: 'cancelled' } } });
+        this.upsertState.pop();
     }
 
     public addEnvironment(values) {
-        this.router.navigate(['..'], {
-            relativeTo: this.route,
-            state: {
-                data: {
-                    form: 'environment',
-                    status: 'saved',
-                    values
-                }
-            }
-        });
+        this.upsertState.pop();
     }
 }

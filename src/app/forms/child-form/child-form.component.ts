@@ -3,6 +3,7 @@ import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { UpsertStateService } from 'src/app/upsert-state.service';
 
 @Component({
     selector: 'app-child-form',
@@ -12,25 +13,11 @@ import { takeUntil } from 'rxjs/operators';
 })
 export class ChildFormComponent implements OnInit {
     public formGroup: FormGroup;
-    public formState: ({ [key: string]: any }) = {};
-
-    private destroyed = new Subject();
 
     constructor(
-        public route: ActivatedRoute,
-        private router: Router,
         private formBuilder: FormBuilder,
-    ) {
-        this.router.events
-            .pipe(
-                takeUntil(this.destroyed)
-            )
-            .subscribe(event => {
-                if (event instanceof NavigationEnd && history.state.data) {
-                    this.formState[history.state.data.form] = history.state.data;
-                }
-            });
-    }
+        public upsertState: UpsertStateService,
+    ) {}
 
     ngOnInit() {
         this.formGroup = this.formBuilder.group({
@@ -39,19 +26,9 @@ export class ChildFormComponent implements OnInit {
     }
 
     public cancelAddPackage() {
-        this.router.navigate(['..'], { relativeTo: this.route, state: { data: { form: 'package', status: 'cancelled' } } });
+        this.upsertState.pop();
     }
 
     public addPackage(values) {
-        this.router.navigate(['..'], {
-            relativeTo: this.route,
-            state: {
-                data: {
-                    form: 'package',
-                    status: 'saved',
-                    values: { ...values, ...this.formState.entity.values }
-                }
-            }
-        });
     }
 }

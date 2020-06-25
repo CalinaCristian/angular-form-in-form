@@ -14,6 +14,7 @@ import { ReactiveFormsModule } from '@angular/forms';
     MaterialModule,
     ReactiveFormsModule,
   ],
-  declarations: [ChildSiblingFormComponent]
+  declarations: [ChildSiblingFormComponent],
+  exports: [ChildSiblingFormComponent],
 })
 export class ChildSiblingFormModule { }

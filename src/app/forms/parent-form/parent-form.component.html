@@ -1,15 +1,8 @@
-<div class="form-container" *ngIf="route.children.length === 0">
+<div class="form-container">
     <form [formGroup]="formGroup" (ngSubmit)="addProcess(formGroup.value)">
         <div class="package-container">
-            <h4 *ngIf="!formState.package?.values">No package found.</h4>
-            <h5 *ngIf="formState.package?.values">
-                <span>Created and selected package: </span>
-                <span [style.color]="'green'">{{formState.package.values.packageName}}</span>
-            </h5>
-            <button mat-raised-button routerLink="add-package" type="button">
+            <button (click)="upsertState.activeForm='child'" mat-raised-button type="button">
                 <span>Add package </span>
-                <span *ngIf="formState.package?.status === 'cancelled'" [style.color]="'red'">(cancelled)</span>
-                <span *ngIf="formState.package?.status === 'saved'" [style.color]="'green'">(saved)</span>
             </button>
         </div>
         
@@ -30,20 +23,13 @@
         </mat-form-field>
 
         <div class="environment-container">
-            <h4 *ngIf="!formState.environment?.values">No environment found.</h4>
-            <h5 *ngIf="formState.environment?.values">
-                <span>Created and selected environment: </span>
-                <span [style.color]="'green'">{{formState.environment.values.environmentName}}</span>
-            </h5>
-            <button mat-raised-button routerLink="add-environment" type="button">
+            <button (click)="upsertState.activeForm='childsibling'" mat-raised-button type="button">
                 <span>Add environment </span>
-                <span *ngIf="formState.environment?.status === 'cancelled'" [style.color]="'red'">(cancelled)</span>
-                <span *ngIf="formState.environment?.status === 'saved'" [style.color]="'green'">(saved)</span>
             </button>
         </div>
 
         <div class="form-actions">
-            <button [disabled]="!formGroup.valid || !formState.package?.values || !formState.environment?.values"
+            <button [disabled]="!formGroup.valid"
                     mat-raised-button
                     color="primary">
                 Save
@@ -52,5 +38,3 @@
         </div>
     </form>
 </div>
-
-<router-outlet></router-outlet>

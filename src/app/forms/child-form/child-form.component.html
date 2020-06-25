@@ -1,15 +1,8 @@
-<div class="form-container" *ngIf="route.children.length === 0">
+<div class="form-container">
     <form [formGroup]="formGroup" (ngSubmit)="addPackage(formGroup.value)">
         <div class="entity-container">
-            <h4 *ngIf="!formState.entity?.values">No entity found.</h4>
-            <h5 *ngIf="formState.entity?.values">
-                <span>Created and selected entity: </span>
-                <span [style.color]="'green'">{{formState.entity.values.entityName}}</span>
-            </h5>
-            <button mat-raised-button routerLink="add-entity" type="button">
+            <button (click)="upsertState.activeForm='grandchild'" mat-raised-button type="button">
                 <span>Add entity </span>
-                <span *ngIf="formState.entity?.status === 'cancelled'" [style.color]="'red'">(cancelled)</span>
-                <span *ngIf="formState.entity?.status === 'saved'" [style.color]="'green'">(saved)</span>
             </button>
         </div>
 
@@ -22,10 +15,8 @@
         </mat-form-field>
 
         <div class="form-actions">
-            <button mat-raised-button color="primary" [disabled]="!formGroup.valid || !formState.entity?.values">Save</button>
+            <button mat-raised-button color="primary" [disabled]="!formGroup.valid">Save</button>
             <button mat-raised-button color="warn" type="button" (click)="cancelAddPackage()">Cancel</button>
         </div>
     </form>
 </div>
-
-<router-outlet></router-outlet>

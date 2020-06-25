@@ -14,6 +14,7 @@ import { ParentFormComponent } from './parent-form.component';
     MaterialModule,
     ReactiveFormsModule,
   ],
-  declarations: [ParentFormComponent]
+  declarations: [ParentFormComponent],
+  exports: [ParentFormComponent]
 })
 export class ParentFormModule { }

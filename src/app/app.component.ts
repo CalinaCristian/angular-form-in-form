@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
+import { UpsertStateService } from './upsert-state.service';
 
 @Component({
   selector: 'app-root',
@@ -14,22 +15,25 @@ export class AppComponent implements OnInit, OnDestroy {
 
   private destroyed = new Subject();
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    public upsertState: UpsertStateService
+  ) { }
 
   ngOnInit() {
     this.router.events
-    .pipe(
-      takeUntil(this.destroyed)
-    )
-    .subscribe(ev => {
-      if (ev instanceof NavigationEnd) {
-        if (ev.url === '/') {
-          this.breadcrumbs = 'home';
-          return;
+      .pipe(
+        takeUntil(this.destroyed)
+      )
+      .subscribe(ev => {
+        if (ev instanceof NavigationEnd) {
+          if (ev.url === '/') {
+            this.breadcrumbs = 'home';
+            return;
+          }
+          this.breadcrumbs = `home ${ev.url.split('/').join(' > ')}`;
         }
-        this.breadcrumbs = `home ${ev.url.split('/').join(' > ')}`;
-      }
-    });
+      });
   }
 
   ngOnDestroy() {

@@ -3,6 +3,7 @@ import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { UpsertStateService } from 'src/app/upsert-state.service';
 
 @Component({
     selector: 'app-parent-form',
@@ -10,30 +11,13 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
     styleUrls: ['./parent-form.component.scss'],
     encapsulation: ViewEncapsulation.None
 })
-export class ParentFormComponent implements OnInit, OnDestroy {
+export class ParentFormComponent implements OnInit {
     public formGroup: FormGroup;
-    public formState: ({ [key: string]: any }) = {};
-
-    private destroyed = new Subject();
 
     constructor(
-        public route: ActivatedRoute,
         private formBuilder: FormBuilder,
-        private router: Router,
-    ) {
-        this.router.events
-            .pipe(
-                takeUntil(this.destroyed)
-            )
-            .subscribe(event => {
-                if (event instanceof NavigationEnd && history.state.data) {
-                    this.formState[history.state.data.form] = history.state.data;
-                }
-            });
-    }
-    ngOnDestroy() {
-        this.destroyed.next();
-    }
+        public upsertState: UpsertStateService,
+    ) {}
 
     ngOnInit() {
         this.formGroup = this.formBuilder.group({
@@ -43,18 +27,10 @@ export class ParentFormComponent implements OnInit, OnDestroy {
     }
 
     public cancelAddProcess() {
-        this.router.navigate(['/'], { state: { data: { form: 'process', status: 'cancelled' } } });
+        this.upsertState.pop();
     }
 
     public addProcess(values) {
-        this.router.navigate(['/'], {
-            state: {
-                data: {
-                    form: 'process',
-                    status: 'saved',
-                    values: { ...values, ...this.formState.package.values, ...this.formState.environment.values }
-                }
-            }
-        });
+        this.upsertState.pop();
     }
 }

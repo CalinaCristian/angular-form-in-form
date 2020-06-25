@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { UpsertStateService } from 'src/app/upsert-state.service';
 
 @Component({
     selector: 'app-grandchild-form',
@@ -12,9 +13,8 @@ export class GrandchildFormComponent implements OnInit {
     public formGroup: FormGroup;
 
     constructor(
-        private route: ActivatedRoute,
-        private router: Router,
         private formBuilder: FormBuilder,
+        private upsertState: UpsertStateService,
     ) { }
 
     ngOnInit() {
@@ -24,10 +24,10 @@ export class GrandchildFormComponent implements OnInit {
     }
 
     public cancelAddEntity() {
-        this.router.navigate(['..'], { relativeTo: this.route, state: { data: { form: 'entity', status: 'cancelled' } } });
+        this.upsertState.pop();
     }
 
     public addEntity(values) {
-        this.router.navigate(['..'], { relativeTo: this.route, state: { data: { form: 'entity', status: 'saved', values } } });
+        this.upsertState.pop();
     }
 }

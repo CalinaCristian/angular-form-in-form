@@ -10,6 +10,7 @@ import { ParentFormModule } from './forms/parent-form/parent-form.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { GrandchildFormModule } from './forms/grandchild-form/grandchild-form.module';
 import { ChildSiblingFormModule } from './forms/child-sibling-form/child-sibling-form.module';
+import { UpsertModule } from './utils/upsert/upsert.module';
 
 @NgModule({
   declarations: [
@@ -19,11 +20,9 @@ import { ChildSiblingFormModule } from './forms/child-sibling-form/child-sibling
     BrowserModule,
     BrowserAnimationsModule,
     AppRoutingModule,
+    MaterialModule,
     HomeModule,
-    GrandchildFormModule,
-    ChildFormModule,
-    ChildSiblingFormModule,
-    ParentFormModule,
+    UpsertModule
   ],
   providers: [],
   bootstrap: [AppComponent]
