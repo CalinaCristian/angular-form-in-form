@@ -1,9 +1,7 @@
-import { Component, OnInit, OnDestroy, ViewEncapsulation } from '@angular/core';
-import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UpsertStateService } from 'src/app/upsert-state.service';
+import { ComponentFactories, UpsertContext } from 'src/app/upsert.types';
 
 @Component({
     selector: 'app-parent-form',
@@ -14,10 +12,20 @@ import { UpsertStateService } from 'src/app/upsert-state.service';
 export class ParentFormComponent implements OnInit {
     public formGroup: FormGroup;
 
+    public dependencies: ComponentFactories<'child' | 'childsibling'> = {
+        child: () => import('../child-form/child-form.component')
+            .then(module => module.ChildFormComponent),
+        childsibling: () => import('../child-sibling-form/child-sibling-form.component')
+            .then(module => module.ChildSiblingFormComponent),
+    }
+
     constructor(
         private formBuilder: FormBuilder,
         public upsertState: UpsertStateService,
-    ) {}
+        private upsertContext: UpsertContext,
+    ) {
+        console.log('Upsert Context', upsertContext);
+    }
 
     ngOnInit() {
         this.formGroup = this.formBuilder.group({
@@ -27,10 +35,10 @@ export class ParentFormComponent implements OnInit {
     }
 
     public cancelAddProcess() {
-        this.upsertState.pop();
+        this.upsertState.pop('cancel')
     }
 
     public addProcess(values) {
-        this.upsertState.pop();
+        this.upsertState.pop('success', values);
     }
 }

@@ -1,11 +1,11 @@
 <div class="form-container">
     <form [formGroup]="formGroup" (ngSubmit)="addProcess(formGroup.value)">
         <div class="package-container">
-            <button (click)="upsertState.activeForm='child'" mat-raised-button type="button">
+            <button (click)="upsertState.push(dependencies.child)" mat-raised-button type="button">
                 <span>Add package </span>
             </button>
         </div>
-        
+
         <mat-form-field>
             <mat-label>Process Name</mat-label>
             <input matInput formControlName="processName" type="text" />
@@ -23,15 +23,13 @@
         </mat-form-field>
 
         <div class="environment-container">
-            <button (click)="upsertState.activeForm='childsibling'" mat-raised-button type="button">
-                <span>Add environment </span>
+            <button (click)="upsertState.push(dependencies.childsibling)" mat-raised-button type="button">
+                <span>Add environment</span>
             </button>
         </div>
 
         <div class="form-actions">
-            <button [disabled]="!formGroup.valid"
-                    mat-raised-button
-                    color="primary">
+            <button [disabled]="!formGroup.valid" mat-raised-button color="primary">
                 Save
             </button>
             <button mat-raised-button color="warn" type="button" (click)="cancelAddProcess()">Cancel</button>

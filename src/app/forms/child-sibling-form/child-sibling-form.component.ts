@@ -24,10 +24,10 @@ export class ChildSiblingFormComponent implements OnInit {
     }
 
     public cancelAddEnvironment() {
-        this.upsertState.pop();
+        this.upsertState.pop('cancel');
     }
 
     public addEnvironment(values) {
-        this.upsertState.pop();
+        this.upsertState.pop('success', values);
     }
 }

@@ -1,7 +1,8 @@
-import { Component, OnInit, Input, ComponentFactoryResolver, ViewContainerRef, OnDestroy, ComponentRef, ViewEncapsulation } from '@angular/core';
-import { UpsertStateService } from 'src/app/upsert-state.service';
+import { Component, ComponentFactoryResolver, ComponentRef, OnDestroy, OnInit, ViewContainerRef, ViewEncapsulation, Injector } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil, startWith } from 'rxjs/operators';
+import { startWith, takeUntil } from 'rxjs/operators';
+import { UpsertStateService } from 'src/app/upsert-state.service';
+import { UpsertEvent, ComponentFactory, UpsertContext } from 'src/app/upsert.types';
 
 @Component({
     selector: 'app-upsert',
@@ -16,18 +17,18 @@ export class UpsertComponent implements OnInit, OnDestroy {
     constructor(
         public upsertState: UpsertStateService,
         private componentFactoryResolver: ComponentFactoryResolver,
-        private viewContainerRef: ViewContainerRef
+        private viewContainerRef: ViewContainerRef,
+        private injector: Injector,
     ) { }
 
     ngOnInit() {
         this.upsertState.events$
             .pipe(
-                startWith('push'),
                 takeUntil(this.destroyed$)
             )
             .subscribe(event => {
-                if (event === 'push') {
-                    this.loadComponent();
+                if (event.type === 'push') {
+                    this.loadComponent(event.factory, event.data);
                 } else {
                     this.destroyComponent();
                 }
@@ -46,10 +47,26 @@ export class UpsertComponent implements OnInit, OnDestroy {
         popped.destroy();
     }
 
-    async loadComponent() {
+    async loadComponent(factory: ComponentFactory, data?: object) {
+        const injector = Injector.create({
+            providers: [
+                {
+                    provide: UpsertContext,
+                    useValue: new UpsertContext(data),
+                }
+            ],
+            parent: this.injector,
+        });
         const componentFactory = this.componentFactoryResolver
-            .resolveComponentFactory(await this.upsertState.loadComponent(this.upsertState.activeForm));
-        const component = this.viewContainerRef.createComponent(componentFactory);
+            .resolveComponentFactory(await factory());
+        const component = this.viewContainerRef.createComponent(
+            componentFactory,
+            undefined,
+            injector
+        );
+        component.instance.upsertContext = {
+            data
+        };
 
         if (this.components.length > 0) {
             this.components[this.components?.length - 1].location.nativeElement.classList.add('hide');

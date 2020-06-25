@@ -1,9 +1,7 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UpsertStateService } from 'src/app/upsert-state.service';
+import { ComponentFactories } from 'src/app/upsert.types';
 
 @Component({
     selector: 'app-child-form',
@@ -14,10 +12,15 @@ import { UpsertStateService } from 'src/app/upsert-state.service';
 export class ChildFormComponent implements OnInit {
     public formGroup: FormGroup;
 
+    public dependencies: ComponentFactories<'grandchild'> = {
+        grandchild: () => import('../grandchild-form/grandchild-form.component')
+            .then(module => module.GrandchildFormComponent),
+    };
+
     constructor(
         private formBuilder: FormBuilder,
         public upsertState: UpsertStateService,
-    ) {}
+    ) { }
 
     ngOnInit() {
         this.formGroup = this.formBuilder.group({
@@ -26,7 +29,7 @@ export class ChildFormComponent implements OnInit {
     }
 
     public cancelAddPackage() {
-        this.upsertState.pop();
+        this.upsertState.pop('cancel');
     }
 
     public addPackage(values) {

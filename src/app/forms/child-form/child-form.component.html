@@ -1,7 +1,7 @@
 <div class="form-container">
     <form [formGroup]="formGroup" (ngSubmit)="addPackage(formGroup.value)">
         <div class="entity-container">
-            <button (click)="upsertState.activeForm='grandchild'" mat-raised-button type="button">
+            <button mat-raised-button type="button" (click)="upsertState.push(dependencies.grandchild)">
                 <span>Add entity </span>
             </button>
         </div>

@@ -1,8 +1,7 @@
 <h1>Forms in forms example</h1>
 
-<button *ngIf="!upsertState.activeForm" (click)="upsertState.activeForm='parent'" mat-raised-button>
+<button *ngIf="!upsertState.peek()" (click)="loadParentForm()" mat-raised-button>
     <span>Add Process </span>
 </button>
 
-
-<app-upsert *ngIf="upsertState.activeForm"></app-upsert>
+<app-upsert *ngIf="upsertState.peek()"></app-upsert>

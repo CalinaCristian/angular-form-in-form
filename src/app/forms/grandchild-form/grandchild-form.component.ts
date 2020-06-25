@@ -24,10 +24,10 @@ export class GrandchildFormComponent implements OnInit {
     }
 
     public cancelAddEntity() {
-        this.upsertState.pop();
+        this.upsertState.pop('cancel');
     }
 
     public addEntity(values) {
-        this.upsertState.pop();
+        this.upsertState.pop('success', values);
     }
 }

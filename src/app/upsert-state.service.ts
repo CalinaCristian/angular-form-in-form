@@ -1,48 +1,31 @@
 import { Injectable, Type } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Subject, ReplaySubject } from 'rxjs';
+import { ComponentFactory, UpsertEvent } from './upsert.types';
 
 @Injectable({
     providedIn: 'root'
 })
 export class UpsertStateService {
-    private activeForms = [];
-    private components = {
-        parent: () => import('./forms/parent-form/parent-form.component')
-            .then(module => module.ParentFormComponent),
-        child: () => import('./forms/child-form/child-form.component')
-            .then(module => module.ChildFormComponent),
-        childsibling: () => import('./forms/child-sibling-form/child-sibling-form.component')
-            .then(module => module.ChildSiblingFormComponent),
-        grandchild: () => import('./forms/grandchild-form/grandchild-form.component')
-            .then(module => module.GrandchildFormComponent),
-    };
-    public events$ = new Subject<'push' | 'pop'>();
+    public events$ = new ReplaySubject<UpsertEvent>(1);
+
+    private componentFactories: ComponentFactory[] = [];
 
     constructor() { }
 
-    set activeForm(form: string) {
-        this.activeForms.push(form);
-        this.events$.next('push');
+    public push(factory: ComponentFactory, data?: object) {
+        this.componentFactories.push(factory);
+        this.events$.next({ type: 'push', factory, data });
     }
 
-    get activeForm() {
-        return this.activeForms[this.activeForms.length - 1];
+    public pop(status: 'cancel'): void;
+    public pop(status: 'success', data: object): void;
+
+    public pop(status: 'cancel' | 'success', data?: object) {
+        this.componentFactories.pop();
+        this.events$.next({ type: 'pop', status, data });
     }
 
-    public registerEntry(name, componentLoader) {
-        this.components[name] = componentLoader;
-    }
-
-    public pop() {
-        this.activeForms.pop();
-        this.events$.next('pop');
-    }
-
-    public isFormActive(form: string) {
-        return this.activeForms.includes(form);
-    }
-
-    public loadComponent(name: string) {
-        return this.components[name]();
+    public peek() {
+        return this.componentFactories[this.componentFactories.length - 1];
     }
 }
