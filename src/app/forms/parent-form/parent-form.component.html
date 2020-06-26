@@ -6,7 +6,7 @@
                 <span>Package saved and selected: </span>
                 <span [style.color]="'green'">{{childData.packageName}}</span>
             </h5>
-            <button (click)="upsertState.push(dependencies.child)" mat-raised-button type="button">
+            <button (click)="loadPackage()" mat-raised-button type="button">
                 <span>Add package </span>
             </button>
         </div>
@@ -33,7 +33,7 @@
                 <span>Environment saved and selected: </span>
                 <span [style.color]="'green'">{{childData.environmentName}}</span>
             </h5>
-            <button (click)="upsertState.push(dependencies.childsibling)" mat-raised-button type="button">
+            <button (click)="loadEnvironment()" mat-raised-button type="button">
                 <span>Add environment</span>
             </button>
         </div>

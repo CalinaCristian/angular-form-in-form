@@ -1,9 +1,9 @@
 import { Component, OnInit, ViewEncapsulation, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { UpsertStateService } from 'src/app/upsert-state.service';
 import { ComponentFactories, UpsertContext } from 'src/app/upsert.types';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
+import { UpsertComponent } from 'src/app/utils/upsert/upsert.component';
 
 @Component({
     selector: 'app-child-form',
@@ -24,17 +24,9 @@ export class ChildFormComponent implements OnInit, OnDestroy {
 
     constructor(
         private formBuilder: FormBuilder,
-        public upsertState: UpsertStateService,
-        private upsertContext: UpsertContext
-    ) {
-        this.upsertContext.childData$
-            .pipe(
-                takeUntil(this.destroyed$)
-            )
-            .subscribe(childData => {
-                this.childData = { ...this.childData, ...childData };
-            });
-    }
+        private upsertContext: UpsertContext,
+        private upsert: UpsertComponent,
+    ) { }
 
     ngOnInit() {
         this.formGroup = this.formBuilder.group({
@@ -46,11 +38,28 @@ export class ChildFormComponent implements OnInit, OnDestroy {
         this.destroyed$.next();
     }
 
+    public async loadEntity() {
+        const context = await this.upsert.loadComponent(this.dependencies.grandchild);
+
+        context.events$
+            .pipe(
+                takeUntil(this.destroyed$)
+            )
+            .subscribe((ev) => {
+                if (ev.status === 'success') {
+                    this.childData = {
+                        ...this.childData,
+                        ...ev.data
+                    };
+                }
+            });
+    }
+
     public cancelAddPackage() {
-        this.upsertState.pop('cancel');
+        this.upsertContext.pop('cancel')
     }
 
     public addPackage(values) {
-        this.upsertState.pop('success', { ...values, ...this.childData });
+        this.upsertContext.pop('success', { ...values, ...this.childData });
     }
 }

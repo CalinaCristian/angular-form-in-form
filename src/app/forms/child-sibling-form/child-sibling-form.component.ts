@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { UpsertStateService } from 'src/app/upsert-state.service';
+import { UpsertComponent } from 'src/app/utils/upsert/upsert.component';
+import { UpsertContext } from 'src/app/upsert.types';
 
 @Component({
     selector: 'app-child-sibling-form',
@@ -13,7 +14,7 @@ export class ChildSiblingFormComponent implements OnInit {
 
     constructor(
         private formBuilder: FormBuilder,
-        private upsertState: UpsertStateService,
+        private upsertContext: UpsertContext,
     ) { }
 
     ngOnInit() {
@@ -23,10 +24,10 @@ export class ChildSiblingFormComponent implements OnInit {
     }
 
     public cancelAddEnvironment() {
-        this.upsertState.pop('cancel');
+        this.upsertContext.pop('cancel');
     }
 
     public addEnvironment(values) {
-        this.upsertState.pop('success', values);
+        this.upsertContext.pop('success', values);
     }
 }

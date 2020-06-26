@@ -1,8 +1,7 @@
-import { Component, ComponentFactoryResolver, ComponentRef, OnDestroy, OnInit, ViewContainerRef, ViewEncapsulation, Injector } from '@angular/core';
+import { Component, ComponentFactoryResolver, ComponentRef, OnDestroy, ViewContainerRef, ViewEncapsulation, Injector } from '@angular/core';
 import { Subject, BehaviorSubject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { UpsertStateService } from 'src/app/upsert-state.service';
-import { ComponentFactory, UpsertContext, Upsert } from 'src/app/upsert.types';
+import { ComponentFactory, UpsertContext } from 'src/app/upsert.types';
 
 @Component({
     selector: 'app-upsert',
@@ -10,56 +9,38 @@ import { ComponentFactory, UpsertContext, Upsert } from 'src/app/upsert.types';
     styleUrls: ['./upsert.component.scss'],
     encapsulation: ViewEncapsulation.None,
 })
-export class UpsertComponent implements OnInit, OnDestroy {
-    private destroyed$ = new Subject();
+export class UpsertComponent implements OnDestroy {
     private components: Array<ComponentRef<unknown>> = [];
+    private destroyed$ = new Subject();
 
     constructor(
-        public upsertState: UpsertStateService,
         private componentFactoryResolver: ComponentFactoryResolver,
         private viewContainerRef: ViewContainerRef,
         private injector: Injector,
     ) { }
 
-    ngOnInit() {
-        this.upsertState.events$
-            .pipe(
-                takeUntil(this.destroyed$)
-            )
-            .subscribe(event => {
-                if (event.type === 'push') {
-                    this.loadComponent(event.factory, event.data);
-                } else {
-                    this.destroyComponent(event.status === 'success' ? event.data : undefined);
-                }
-            });
-    }
-
     ngOnDestroy() {
         this.destroyed$.next();
     }
 
-    async destroyComponent(data?: { [key: string]: any }) {
+    async destroyComponent() {
         const popped = this.components.pop();
         if (this.components.length > 0) {
             const activeComponent = this.components[this.components?.length - 1];
 
-            (activeComponent.instance as Upsert<any>).upsertContext.childData$.next(data);
             activeComponent.location.nativeElement.classList.remove('hide');
         }
         popped.destroy();
     }
 
     async loadComponent(factory: ComponentFactory, data?: { [key: string]: any }) {
-        const childData$ = new Subject();
+        const context = new UpsertContext(data);
+
         const injector = Injector.create({
             providers: [
                 {
                     provide: UpsertContext,
-                    useValue: new UpsertContext(
-                        childData$,
-                        data
-                    ),
+                    useValue: context
                 }
             ],
             parent: this.injector,
@@ -69,16 +50,22 @@ export class UpsertComponent implements OnInit, OnDestroy {
         const component = this.viewContainerRef.createComponent(
             componentFactory,
             undefined,
-            injector
+            injector,
         );
-        component.instance.upsertContext = {
-            parentData: data,
-            childData$
-        };
 
         if (this.components.length > 0) {
             this.components[this.components?.length - 1].location.nativeElement.classList.add('hide');
         }
         this.components.push(component);
+
+        context.events$
+            .pipe(
+                takeUntil(this.destroyed$)
+            )
+            .subscribe(() => {
+                this.destroyComponent();
+            });
+
+        return context;
     }
 }

@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { UpsertStateService } from 'src/app/upsert-state.service';
+import { UpsertContext } from 'src/app/upsert.types';
 
 @Component({
     selector: 'app-grandchild-form',
@@ -13,7 +13,7 @@ export class GrandchildFormComponent implements OnInit {
 
     constructor(
         private formBuilder: FormBuilder,
-        private upsertState: UpsertStateService,
+        private upsertContext: UpsertContext,
     ) { }
 
     ngOnInit() {
@@ -23,10 +23,10 @@ export class GrandchildFormComponent implements OnInit {
     }
 
     public cancelAddEntity() {
-        this.upsertState.pop('cancel');
+        this.upsertContext.pop('cancel');
     }
 
     public addEntity(values) {
-        this.upsertState.pop('success', values);
+        this.upsertContext.pop('success', values);
     }
 }

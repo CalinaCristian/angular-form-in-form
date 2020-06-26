@@ -1,9 +1,9 @@
 import { Component, OnInit, ViewEncapsulation, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { UpsertStateService } from 'src/app/upsert-state.service';
 import { ComponentFactories, UpsertContext } from 'src/app/upsert.types';
-import { Subject } from 'rxjs';
+import { Subject, Observable } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { UpsertComponent } from 'src/app/utils/upsert/upsert.component';
 
 @Component({
     selector: 'app-parent-form',
@@ -25,23 +25,15 @@ export class ParentFormComponent implements OnInit, OnDestroy {
     private destroyed$ = new Subject();
 
     constructor(
-        public upsertState: UpsertStateService,
         private formBuilder: FormBuilder,
         private upsertContext: UpsertContext,
-    ) {
-        this.upsertContext.childData$
-            .pipe(
-                takeUntil(this.destroyed$)
-            )
-            .subscribe(childData => {
-                this.childData = { ...this.childData, ...childData };
-            });
-    }
+        private upsert: UpsertComponent,
+    ) { }
 
     ngOnInit() {
         this.formGroup = this.formBuilder.group({
-            processName: [this.upsertContext.parentData?.initialProcessName, Validators.required],
-            processVersion: [this.upsertContext.parentData?.initialProcessVersion, Validators.required]
+            processName: [this.upsertContext.data?.initialProcessName, Validators.required],
+            processVersion: [this.upsertContext.data?.initialProcessVersion, Validators.required]
         });
     }
 
@@ -49,11 +41,45 @@ export class ParentFormComponent implements OnInit, OnDestroy {
         this.destroyed$.next();
     }
 
+    public async loadPackage() {
+        const context = await this.upsert.loadComponent(this.dependencies.child);
+
+        context.events$
+            .pipe(
+                takeUntil(this.destroyed$)
+            )
+            .subscribe((ev) => {
+                if (ev.status === 'success') {
+                    this.childData = {
+                        ...this.childData,
+                        ...ev.data
+                    };
+                }
+            });
+    }
+
+    public async loadEnvironment() {
+        const context = await this.upsert.loadComponent(this.dependencies.childsibling);
+
+        context.events$
+            .pipe(
+                takeUntil(this.destroyed$)
+            )
+            .subscribe((ev) => {
+                if (ev.status === 'success') {
+                    this.childData = {
+                        ...this.childData,
+                        ...ev.data
+                    };
+                }
+            })
+    }
+
     public cancelAddProcess() {
-        this.upsertState.pop('cancel');
+        this.upsertContext.pop('cancel');
     }
 
     public addProcess(values) {
-        this.upsertState.pop('success', { ...values, ...this.childData });
+        this.upsertContext.pop('success', { ...values, ...this.childData });
     }
 }

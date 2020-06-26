@@ -1,24 +1,24 @@
 import { Type } from '@angular/core';
-import { Subject } from 'rxjs';
-
-export interface Upsert<T extends { [key: string]: any }> {
-    upsertContext?: {
-        parentData?: T;
-        childData$: Subject<T>;
-    };
-}
+import { ReplaySubject } from 'rxjs';
 
 export type ComponentFactory = () => Promise<Type<any>>;
 export type ComponentFactories<T extends string> = Record<T, ComponentFactory>;
 
 export type UpsertEvent =
-    | { type: 'push'; factory: ComponentFactory; data?: { [key: string]: any }; }
-    | { type: 'pop'; status: 'cancel'; }
-    | { type: 'pop'; status: 'success'; data: { [key: string]: any } };
+    | { status: 'cancel'; }
+    | { status: 'success'; data: { [key: string]: any } };
 
 export class UpsertContext {
+    public events$ = new ReplaySubject<UpsertEvent>(1);
+
     constructor(
-        public childData$: Subject<{ [key: string]: any }>,
-        public parentData?: { [key: string]: any },
+        public data?: { [key: string]: any },
     ) {}
+
+    public pop(status: 'cancel'): void;
+    public pop(status: 'success', data: { [key: string]: any }): void;
+
+    public pop(status: 'cancel' | 'success', data?: { [key: string]: any }) {
+        this.events$.next({ status, data });
+    }
 }

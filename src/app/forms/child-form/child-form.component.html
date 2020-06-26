@@ -6,7 +6,7 @@
                 <span>Entity saved and selected: </span>
                 <span [style.color]="'green'">{{childData.entityName}}</span>
             </h5>
-            <button mat-raised-button type="button" (click)="upsertState.push(dependencies.grandchild)">
+            <button mat-raised-button type="button" (click)="loadEntity()">
                 <span>Add entity </span>
             </button>
         </div>
